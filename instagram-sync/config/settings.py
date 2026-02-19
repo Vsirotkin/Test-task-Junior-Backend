@@ -18,11 +18,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def get_env_var(name: str, required: bool = True) -> str:
     """Получает переменную окружения. Если required=True и переменная не задана — выбрасывает ошибку."""
     value = os.getenv(name)
     if required and value is None:
-        raise ImproperlyConfigured(f"Required environment variable '{name}' is not set.")
+        raise ImproperlyConfigured(
+            f"Required environment variable '{name}' is not set."
+        )
     return cast(str, value)
 
 
@@ -139,7 +142,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = "static/"
 
 STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -148,5 +150,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.CursorPagination",
     "PAGE_SIZE": 10,
-    "ORDERING_PARAM": "created_at", 
+    "ORDERING_PARAM": "created_at",
 }
+
+# Instagram API
+INSTAGRAM_ACCESS_TOKEN = get_env_var("INSTAGRAM_ACCESS_TOKEN")
+INSTAGRAM_USER_ID = get_env_var("INSTAGRAM_USER_ID")
