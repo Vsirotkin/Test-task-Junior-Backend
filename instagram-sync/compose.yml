@@ -1,0 +1,46 @@
+# compose.yml
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: instagram_sync_db
+    environment:
+      POSTGRES_DB: instagram_sync
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: instagram_sync_web
+    # ✅ Миграции + запуск сервера в одной команде
+    command: >
+      sh -c "uv run python manage.py migrate &&
+             uv run python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - DB_NAME=instagram_sync
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - INSTAGRAM_ACCESS_TOKEN=${INSTAGRAM_ACCESS_TOKEN}
+      - INSTAGRAM_USER_ID=${INSTAGRAM_USER_ID}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
