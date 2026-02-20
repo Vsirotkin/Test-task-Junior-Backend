@@ -1,10 +1,10 @@
+# apps/posts/serializers.py
 from rest_framework import serializers
 from .models import Post, Comment
 
 
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализатор для комментариев."""
-
     class Meta:
         model = Comment
         fields = [
@@ -16,7 +16,12 @@ class CommentSerializer(serializers.ModelSerializer):
             "username",
             "created_at",
         ]
-        read_only_fields = ["id", "instagram_comment_id", "created_at"]
+        read_only_fields = [
+            "id",
+            "instagram_comment_id",
+            "post",
+            "created_at",
+        ]
 
 
 class PostSerializer(serializers.ModelSerializer):
